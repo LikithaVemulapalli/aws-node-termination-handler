@@ -40,7 +40,7 @@ const (
 	podTerminationGracePeriodDefault        = -1
 	nodeTerminationGracePeriodConfigKey     = "NODE_TERMINATION_GRACE_PERIOD"
 	nodeTerminationGracePeriodDefault       = 120
-	webhookURLConfigKey                     = "WEBHOOK_URL"
+	webhookURLConfigKey                     = "LIKITHA_WEBHOOK_URL"
 	webhookURLDefault                       = ""
 	webhookProxyConfigKey                   = "WEBHOOK_PROXY"
 	webhookProxyDefault                     = ""

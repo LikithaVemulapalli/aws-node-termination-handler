@@ -121,7 +121,7 @@ spec:
               value: {{ . | quote }}
             {{- end }}
             {{- if or .Values.webhookURL .Values.webhookURLSecretName }}
-            - name: WEBHOOK_URL
+            - name: LIKITHA_WEBHOOK_URL
             {{- if .Values.webhookURLSecretName }}
               valueFrom:
                 secretKeyRef:

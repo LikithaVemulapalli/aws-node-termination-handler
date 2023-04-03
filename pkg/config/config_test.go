@@ -47,7 +47,7 @@ func TestParseCliArgsEnvSuccess(t *testing.T) {
 	t.Setenv("NODE_TERMINATION_GRACE_PERIOD", "12345")
 	t.Setenv("INSTANCE_METADATA_URL", "INSTANCE_METADATA_URL")
 	t.Setenv("POD_TERMINATION_GRACE_PERIOD", "12345")
-	t.Setenv("WEBHOOK_URL", "WEBHOOK_URL")
+	t.Setenv("LIKITHA_WEBHOOK_URL", "LIKITHA_WEBHOOK_URL")
 	t.Setenv("WEBHOOK_HEADERS", "WEBHOOK_HEADERS")
 	t.Setenv("WEBHOOK_TEMPLATE", "WEBHOOK_TEMPLATE")
 	t.Setenv("METADATA_TRIES", "100")
@@ -71,7 +71,7 @@ func TestParseCliArgsEnvSuccess(t *testing.T) {
 	h.Equals(t, 12345, nthConfig.NodeTerminationGracePeriod)
 	h.Equals(t, "INSTANCE_METADATA_URL", nthConfig.MetadataURL)
 	h.Equals(t, 12345, nthConfig.PodTerminationGracePeriod)
-	h.Equals(t, "WEBHOOK_URL", nthConfig.WebhookURL)
+	h.Equals(t, "LIKITHA_WEBHOOK_URL", nthConfig.WebhookURL)
 	h.Equals(t, "WEBHOOK_HEADERS", nthConfig.WebhookHeaders)
 	h.Equals(t, "WEBHOOK_TEMPLATE", nthConfig.WebhookTemplate)
 	h.Equals(t, 100, nthConfig.MetadataTries)
@@ -106,7 +106,7 @@ func TestParseCliArgsSuccess(t *testing.T) {
 		"--node-termination-grace-period=12345",
 		"--metadata-url=INSTANCE_METADATA_URL",
 		"--pod-termination-grace-period=12345",
-		"--webhook-url=WEBHOOK_URL",
+		"--webhook-url=LIKITHA_WEBHOOK_URL",
 		"--webhook-headers=WEBHOOK_HEADERS",
 		"--webhook-template=WEBHOOK_TEMPLATE",
 		"--metadata-tries=100",
@@ -131,7 +131,7 @@ func TestParseCliArgsSuccess(t *testing.T) {
 	h.Equals(t, 12345, nthConfig.NodeTerminationGracePeriod)
 	h.Equals(t, "INSTANCE_METADATA_URL", nthConfig.MetadataURL)
 	h.Equals(t, 12345, nthConfig.PodTerminationGracePeriod)
-	h.Equals(t, "WEBHOOK_URL", nthConfig.WebhookURL)
+	h.Equals(t, "LIKITHA_WEBHOOK_URL", nthConfig.WebhookURL)
 	h.Equals(t, "WEBHOOK_HEADERS", nthConfig.WebhookHeaders)
 	h.Equals(t, "WEBHOOK_TEMPLATE", nthConfig.WebhookTemplate)
 	h.Equals(t, 100, nthConfig.MetadataTries)
@@ -162,7 +162,7 @@ func TestParseCliArgsOverrides(t *testing.T) {
 	t.Setenv("NODE_TERMINATION_GRACE_PERIOD", "99999")
 	t.Setenv("INSTANCE_METADATA_URL", "no")
 	t.Setenv("POD_TERMINATION_GRACE_PERIOD", "99999")
-	t.Setenv("WEBHOOK_URL", "no")
+	t.Setenv("LIKITHA_WEBHOOK_URL", "no")
 	t.Setenv("WEBHOOK_HEADERS", "no")
 	t.Setenv("WEBHOOK_TEMPLATE", "no")
 	t.Setenv("METADATA_TRIES", "100")
@@ -184,7 +184,7 @@ func TestParseCliArgsOverrides(t *testing.T) {
 		"--node-termination-grace-period=12345",
 		"--metadata-url=INSTANCE_METADATA_URL",
 		"--pod-termination-grace-period=12345",
-		"--webhook-url=WEBHOOK_URL",
+		"--webhook-url=LIKITHA_WEBHOOK_URL",
 		"--webhook-headers=WEBHOOK_HEADERS",
 		"--webhook-template=WEBHOOK_TEMPLATE",
 		"--metadata-tries=101",
@@ -211,7 +211,7 @@ func TestParseCliArgsOverrides(t *testing.T) {
 	h.Equals(t, 12345, nthConfig.NodeTerminationGracePeriod)
 	h.Equals(t, "INSTANCE_METADATA_URL", nthConfig.MetadataURL)
 	h.Equals(t, 12345, nthConfig.PodTerminationGracePeriod)
-	h.Equals(t, "WEBHOOK_URL", nthConfig.WebhookURL)
+	h.Equals(t, "LIKITHA_WEBHOOK_URL", nthConfig.WebhookURL)
 	h.Equals(t, "WEBHOOK_HEADERS", nthConfig.WebhookHeaders)
 	h.Equals(t, "WEBHOOK_TEMPLATE", nthConfig.WebhookTemplate)
 	h.Equals(t, 101, nthConfig.MetadataTries)
