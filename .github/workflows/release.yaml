@@ -45,7 +45,7 @@ jobs:
         Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
         refreshenv
       
-        choco install wsl-ubuntu-2004
+        choco install wsl
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
