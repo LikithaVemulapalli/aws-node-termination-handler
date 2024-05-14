@@ -38,6 +38,15 @@ jobs:
     name: Release Windows
     runs-on: windows-2019
     steps:
+    - name: Install WSL and Ubuntu
+      shell: powershell
+      run: |
+        $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."
+        Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+        refreshenv
+      
+        choco install wsl-ubuntu-2004
+
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
@@ -52,7 +61,7 @@ jobs:
         Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
         refreshenv
 
-        choco install make && choco install zip && choco install wsl2 && make release-windows
+        choco install make && choco install zip && make release-windows
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
