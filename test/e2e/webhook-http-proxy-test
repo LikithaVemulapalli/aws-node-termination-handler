@@ -125,7 +125,7 @@ anth_helm_args=(
   --set image.tag="$NODE_TERMINATION_HANDLER_DOCKER_TAG"
   --set enableSpotInterruptionDraining="true"
   --set enableScheduledEventDraining="true"
-  --set webhookURL="$WEBHOOK_URL"
+  --set webhookURL="$LIKITHA_WEBHOOK_URL"
   --set webhookTemplate="\{\"Content\":\"[NTH][Instance Interruption] InstanceId: \{\{ \.InstanceID \}\} - Node: \{\{ \.NodeName \}\} - InstanceType: \{\{ \.InstanceType \}\} - Kind: \{\{ \.Kind \}\} - Start Time: \{\{ \.StartTime \}\}\"\}"
   --set webhookProxy="$SQUID_URL"
   --force
@@ -179,7 +179,7 @@ for i in $(seq 1 $TAINT_CHECK_CYCLES); do
     sent=1
   fi
 
-  webhook_hostname=$(echo "${WEBHOOK_URL}" | sed -e 's@^[^/]*//@@' -e 's@/.*$@@')
+  webhook_hostname=$(echo "${LIKITHA_WEBHOOK_URL}" | sed -e 's@^[^/]*//@@' -e 's@/.*$@@')
   if [[ $sent -eq 1 ]] && kubectl exec -i "$(echo "${squid_worker_pods}" | cut -d' ' -f1)" -- cat /var/log/squid/access.log | grep "${webhook_hostname}" >/dev/null; then
      echo "✅ Verified the webhook POST used the http proxy"
         exit 0
