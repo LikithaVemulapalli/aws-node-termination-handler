@@ -52,7 +52,7 @@ jobs:
         Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
         refreshenv
 
-        choco install make && choco install zip && choco install wsl && make release-windows
+        choco install make && choco install zip && choco install wsltty && make release-windows
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.LIKITHA_AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.LIKITHA_AWS_SECRET_ACCESS_KEY }}
