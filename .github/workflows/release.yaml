@@ -50,7 +50,6 @@ jobs:
       uses: Vampire/setup-wsl@v3
 
     - name: Release Windows Assets
-      shell: wsl-bash
       run: |
         $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."
         Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
