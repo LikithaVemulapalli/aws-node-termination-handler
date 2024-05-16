@@ -130,7 +130,7 @@ upload-resources-to-github:
 	${MAKEFILE_PATH}/scripts/upload-resources-to-github -k -s ${K8S_1_25_ASSET_SUFFIX}
 
 upload-resources-to-github-windows:
-	bash ${MAKEFILE_PATH}/scripts/upload-resources-to-github -b
+	wsl-bash ${MAKEFILE_PATH}/scripts/upload-resources-to-github -b
 
 generate-k8s-yaml:
 	${MAKEFILE_PATH}/scripts/generate-k8s-yaml
