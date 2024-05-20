@@ -6,6 +6,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Function to handle errors and cleanup any partially uploaded assets
 function HandleErrorsAndCleanup {
     param (
         [int]$ExitCode
@@ -23,24 +24,34 @@ function HandleErrorsAndCleanup {
     }
 }
 
+# Function to upload an asset to GitHub
 function UploadAsset {
     param (
         [string]$AssetPath
     )
-    $resp = Invoke-RestMethod -Method Post -Uri "https://uploads.github.com/repos/aws/aws-node-termination-handler/releases/$ReleaseId/assets?name=$(Split-Path -Leaf $AssetPath)" -Headers @{
+    $ContentType = if ((Get-Content -Path $AssetPath -Raw).Length -gt 1) { 'application/zip' } else { 'application/octet-stream' }
+    $Headers = @{
         Authorization = "token $env:GITHUB_TOKEN"
-        'Content-Type' = (Get-Content -Path $AssetPath -Raw | Measure-Object -Line).Count -gt 1 ? 'application/zip' : 'application/octet-stream'
-    } -InFile $AssetPath -ErrorAction Stop
-
-    if ($resp.id -ne $null) {
-        $global:AssetIdsUploaded += $resp.id
-        Write-Host "Created asset ID $($resp.id) successfully"
-    } else {
-        Write-Host "❌ Upload failed with response message: $($resp | ConvertTo-Json) ❌"
+        'Content-Type' = $ContentType
+    }
+    $Uri = "https://uploads.github.com/repos/aws/aws-node-termination-handler/releases/$ReleaseId/assets?name=$(Split-Path -Leaf $AssetPath)"
+    
+    try {
+        $Response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $Headers -InFile $AssetPath -ErrorAction Stop
+        if ($Response.id -ne $null) {
+            $global:AssetIdsUploaded += $Response.id
+            Write-Host "Created asset ID $($Response.id) successfully"
+        } else {
+            Write-Host "❌ Upload failed with response message: $($Response | ConvertTo-Json) ❌"
+            exit 1
+        }
+    } catch {
+        Write-Host "❌ Upload failed: $_"
         exit 1
     }
 }
 
+# Initialize global variables
 $global:AssetIdsUploaded = @()
 trap { HandleErrorsAndCleanup -ExitCode $global:LASTEXITCODE }
 
@@ -50,16 +61,18 @@ $BuildDir = "$ScriptPath\..\build\k8s-resources\$Version"
 $BinaryDir = "$ScriptPath\..\build\bin"
 $ReleaseId = (Invoke-RestMethod -Uri "https://api.github.com/repos/aws/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"} | ConvertFrom-Json | Where-Object { $_.tag_name -eq $Version }).id
 
+# Gather assets to upload based on the -BinariesOnly flag
 $Assets = @()
 if (-not $BinariesOnly) {
     $Assets += "$BuildDir\individual-resources.tar", "$BuildDir\all-resources.yaml", "$BuildDir\individual-resources-queue-processor.tar", "$BuildDir\all-resources-queue-processor.yaml"
 }
-if ($BinariesOnly) {
-    $Assets += Get-ChildItem -Path $BinaryDir
+if ($BinariesOnly -or (-not $BinariesOnly)) {
+    $Assets += Get-ChildItem -Path $BinaryDir | ForEach-Object { $_.FullName }
 }
 
+# Upload each asset
 Write-Host "`nUploading release assets for release id '$ReleaseId' to Github"
-for ($i = 0; $i -lt $Assets.Count; $i++) {
-    Write-Host "`n  $($i + 1). $($Assets[$i] | Split-Path -Leaf)"
-    UploadAsset -AssetPath $Assets[$i]
+foreach ($Asset in $Assets) {
+    Write-Host "`n  Uploading $($Asset | Split-Path -Leaf)"
+    UploadAsset -AssetPath $Asset
 }
