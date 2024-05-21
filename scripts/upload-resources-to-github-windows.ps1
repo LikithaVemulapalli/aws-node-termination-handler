@@ -62,7 +62,7 @@ $BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
 $BinaryDir = "$ScriptPath/../build/bin"
 
 try {
-    $Response = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"}
+    $Response = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"})
 } catch {
     Write-Output "Failed to retrieve releases from GitHub: $_"
     exit 1
