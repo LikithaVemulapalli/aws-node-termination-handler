@@ -57,11 +57,11 @@ $global:AssetIdsUploaded = @()
 trap { HandleErrorsAndCleanup -ExitCode $global:LASTEXITCODE }
 
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Version = "v1.110.0"
+$Version = "v1.111.0"
 $BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
 $BinaryDir = "$ScriptPath/../build/bin"
 
-[Net.ServicePointManager]::SecurityProtocol = [Net.::SecurityProtocolType]::Tls12
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 try {
     $Response = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"})
