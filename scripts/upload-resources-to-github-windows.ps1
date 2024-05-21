@@ -60,7 +60,26 @@ $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Version = (& "$ScriptPath/../Makefile" version -s)
 $BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
 $BinaryDir = "$ScriptPath/../build/bin"
-$ReleaseId = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"} | Where-Object { $_.tag_name -eq $Version }).id
+
+try {
+    $Response = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"}
+} catch {
+    Write-Output "Failed to retrieve releases from GitHub: $_"
+    exit 1
+}
+
+Write-Output "API Response:"
+Write-Output $Response
+
+$release = $Response | Where-Object { $_.tag_name -eq $Version }
+
+Write-Output "Filtered Release"
+Write-Output $release
+
+$ReleaseId = $release.id
+
+Write-Output "Release ID:"
+Write-Output $ReleaseId
 
 if (-not $ReleaseId) {
     Write-Output "❌ Failed to find release ID for version $Version  ❌"
