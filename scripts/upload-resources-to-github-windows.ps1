@@ -5,25 +5,25 @@ param(
     [switch]$K8sAssetsOnly
 )
 
-#$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Stop"
 
-# # Function to handle errors and cleanup any partially uploaded assets
-# function HandleErrorsAndCleanup {
-#     param (
-#         [int]$ExitCode
-#     )
-#     if ($ExitCode -eq 0) {
-#         exit 0
-#     }
-#     if ($global:AssetIdsUploaded.Count -ne 0) {
-#         Write-Output "`nCleaning up assets uploaded in the current execution of the script"
-#         foreach ($assetId in $global:AssetIdsUploaded) {
-#             Write-Output "Deleting asset $assetId"
-#             Invoke-RestMethod -Method Delete -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases/assets/$assetId" -Headers @{Authorization = "token $env:GITHUB_TOKEN"}
-#         }
-#         exit $ExitCode
-#     }
-# }
+# Function to handle errors and cleanup any partially uploaded assets
+function HandleErrorsAndCleanup {
+    param (
+        [int]$ExitCode
+    )
+    if ($ExitCode -eq 0) {
+        exit 0
+    }
+    if ($global:AssetIdsUploaded.Count -ne 0) {
+        Write-Output "`nCleaning up assets uploaded in the current execution of the script"
+        foreach ($assetId in $global:AssetIdsUploaded) {
+            Write-Output "Deleting asset $assetId"
+            Invoke-RestMethod -Method Delete -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases/assets/$assetId" -Headers @{Authorization = "token $env:GITHUB_TOKEN"}
+        }
+        exit $ExitCode
+    }
+}
 
 # Function to upload an asset to GitHub
 function UploadAsset {
@@ -40,7 +40,7 @@ function UploadAsset {
     try {
         $Response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $Headers -InFile $AssetPath -ErrorAction Stop
         if ($Response -and $Response.id) {
-            #$global:AssetIdsUploaded += $Response.id
+            $global:AssetIdsUploaded += $Response.id
             Write-Output "Created asset ID $($Response.id) successfully"
         } else {
             Write-Output "❌ Upload failed with response message: $($Response | ConvertTo-Json) ❌"
@@ -53,13 +53,15 @@ function UploadAsset {
 }
 
 # Initialize global variables
-# $global:AssetIdsUploaded = @()
-# trap { HandleErrorsAndCleanup -ExitCode $global:LASTEXITCODE }
+$global:AssetIdsUploaded = @()
+trap { HandleErrorsAndCleanup -ExitCode $global:LASTEXITCODE }
 
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Version = v1.109.0
+$Version = "v1.110.0"
 $BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
 $BinaryDir = "$ScriptPath/../build/bin"
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.::SecurityProtocolType]::Tls12
 
 try {
     $Response = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"})
@@ -72,12 +74,9 @@ Write-Output "API Response:"
 Write-Output $Response | ForEach-Object { Write-Output $_.tag_name }
 
 
-$release = $Response | Where-Object {
-    Write-Output "Checking release: $($_.tag_name)"
-    $_.tag_name -eq $Version
-}
+$release = $Response | Where-Object { $_.tag_name -eq $Version }
 
-Write-Output "Filtered Release"
+Write-Output "Filtered Release  - latest release"
 Write-Output $release
 
 $ReleaseId = $release.id
@@ -92,10 +91,12 @@ if (-not $ReleaseId) {
 
 # Gather assets to upload based on the -BinariesOnly flag
 $Assets = @()
+if ($BinariesOnly) {
+    $Assets += Get-ChildItem -Path $BinaryDir | ForEach-Object { $_.FullName }
+}
 if (-not $BinariesOnly) {
     $Assets += "$BuildDir\individual-resources.tar", "$BuildDir\all-resources.yaml", "$BuildDir\individual-resources-queue-processor.tar", "$BuildDir\all-resources-queue-processor.yaml"
 }
-$Assets += Get-ChildItem -Path $BinaryDir | ForEach-Object { $_.FullName }
 
 # Log gathered assets
 Write-Output "Assets to upload:"
