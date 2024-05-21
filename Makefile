@@ -1,4 +1,4 @@
-VERSION = v1.108.0
+VERSION = v1.109.0
 LATEST_RELEASE_TAG=$(shell git describe --tags --abbrev=0)
 LATEST_COMMIT_HASH=$(shell git rev-parse HEAD)
 LATEST_COMMIT_CHART_VERSION=$(shell git --no-pager show ${LATEST_COMMIT_HASH}:config/helm/aws-node-termination-handler/Chart.yaml | grep 'version:' | cut -d' ' -f2 | tr -d '[:space:]')

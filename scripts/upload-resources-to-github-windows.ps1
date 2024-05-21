@@ -57,7 +57,7 @@ function UploadAsset {
 # trap { HandleErrorsAndCleanup -ExitCode $global:LASTEXITCODE }
 
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Version = (& "$ScriptPath/../Makefile" version -s)
+$Version = v1.109.0
 $BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
 $BinaryDir = "$ScriptPath/../build/bin"
 
@@ -69,9 +69,13 @@ try {
 }
 
 Write-Output "API Response:"
-Write-Output $Response
+Write-Output $Response | ForEach-Object { Write-Output $_.tag_name }
 
-$release = $Response | Where-Object { $_.tag_name -eq $Version }
+
+$release = $Response | Where-Object {
+    Write-Output "Checking release: $($_.tag_name)"
+    $_.tag_name -eq $Version
+}
 
 Write-Output "Filtered Release"
 Write-Output $release
