@@ -18,7 +18,7 @@ function HandleErrorsAndCleanup {
         Write-Host "`nCleaning up assets uploaded in the current execution of the script"
         foreach ($assetId in $global:AssetIdsUploaded) {
             Write-Host "Deleting asset $assetId"
-            Invoke-RestMethod -Method Delete -Uri "https://api.github.com/repos/aws/aws-node-termination-handler/releases/assets/$assetId" -Headers @{Authorization = "token $env:GITHUB_TOKEN"}
+            Invoke-RestMethod -Method Delete -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases/assets/$assetId" -Headers @{Authorization = "token $env:GITHUB_TOKEN"}
         }
         exit $ExitCode
     }
@@ -34,7 +34,7 @@ function UploadAsset {
         Authorization = "token $env:GITHUB_TOKEN"
         'Content-Type' = $ContentType
     }
-    $Uri = "https://uploads.github.com/repos/aws/aws-node-termination-handler/releases/$ReleaseId/assets?name=$(Split-Path -Leaf $AssetPath)"
+    $Uri = "https://uploads.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases/$ReleaseId/assets?name=$(Split-Path -Leaf $AssetPath)"
     
     try {
         $Response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $Headers -InFile $AssetPath -ErrorAction Stop
@@ -56,10 +56,10 @@ $global:AssetIdsUploaded = @()
 trap { HandleErrorsAndCleanup -ExitCode $global:LASTEXITCODE }
 
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Version = & "$ScriptPath\..\Makefile" version -s
-$BuildDir = "$ScriptPath\..\build\k8s-resources\$Version"
-$BinaryDir = "$ScriptPath\..\build\bin"
-$ReleaseId = (Invoke-RestMethod -Uri "https://api.github.com/repos/aws/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"} | ConvertFrom-Json | Where-Object { $_.tag_name -eq $Version }).id
+$Version = & "$ScriptPath/../Makefile" version -s
+$BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
+$BinaryDir = "$ScriptPath/../build/bin"
+$ReleaseId = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"} | ConvertFrom-Json | Where-Object { $_.tag_name -eq $Version }).id
 
 # Gather assets to upload based on the -BinariesOnly flag
 $Assets = @()
