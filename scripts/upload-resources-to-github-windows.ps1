@@ -1,7 +1,7 @@
 # upload-resources-to-github.ps1
 
 param(
-    [switch]$BinariesOnly
+    [switch]$BinariesOnly,
     [switch]$K8sAssetsOnly
 )
 
