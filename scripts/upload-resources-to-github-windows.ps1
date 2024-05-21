@@ -66,9 +66,7 @@ $Assets = @()
 if (-not $BinariesOnly) {
     $Assets += "$BuildDir\individual-resources.tar", "$BuildDir\all-resources.yaml", "$BuildDir\individual-resources-queue-processor.tar", "$BuildDir\all-resources-queue-processor.yaml"
 }
-if ($BinariesOnly -or (-not $BinariesOnly)) {
-    $Assets += Get-ChildItem -Path $BinaryDir | ForEach-Object { $_.FullName }
-}
+$Assets += Get-ChildItem -Path $BinaryDir | ForEach-Object { $_.FullName }
 
 # Upload each asset
 Write-Host "`nUploading release assets for release id '$ReleaseId' to Github"
