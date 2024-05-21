@@ -2,6 +2,7 @@
 
 param(
     [switch]$BinariesOnly
+    [switch]$K8sAssetsOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -29,7 +30,7 @@ function UploadAsset {
     param (
         [string]$AssetPath
     )
-    $ContentType = if ((Get-Content -Path $AssetPath -Raw).Length -gt 1) { 'application/zip' } else { 'application/octet-stream' }
+    $ContentType = [System.Web.MimeMapping]::GetMimeMapping($AssetPath)
     $Headers = @{
         Authorization = "token $env:GITHUB_TOKEN"
         'Content-Type' = $ContentType
@@ -61,12 +62,23 @@ $BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
 $BinaryDir = "$ScriptPath/../build/bin"
 $ReleaseId = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"} | ConvertFrom-Json | Where-Object { $_.tag_name -eq $Version }).id
 
+if (-not $ReleaseId) {
+    Write-Host "❌ Failed to find release ID for version $Version ❌"
+    exit 1
+}
+
 # Gather assets to upload based on the -BinariesOnly flag
 $Assets = @()
 if (-not $BinariesOnly) {
     $Assets += "$BuildDir\individual-resources.tar", "$BuildDir\all-resources.yaml", "$BuildDir\individual-resources-queue-processor.tar", "$BuildDir\all-resources-queue-processor.yaml"
 }
 $Assets += Get-ChildItem -Path $BinaryDir | ForEach-Object { $_.FullName }
+
+# Log gathered assets
+Write-Host "Assets to upload:"
+foreach ($Asset in $Assets) {
+    Write-Host $Asset
+}
 
 # Upload each asset
 Write-Host "`nUploading release assets for release id '$ReleaseId' to Github"
