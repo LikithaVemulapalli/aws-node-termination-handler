@@ -60,10 +60,10 @@ $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Version = (& "$ScriptPath/../Makefile" version -s)
 $BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
 $BinaryDir = "$ScriptPath/../build/bin"
-$ReleaseId = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"} | ConvertFrom-Json | Where-Object { $_.tag_name -eq $Version }).id
+$ReleaseId = (Invoke-RestMethod -Uri "https://api.github.com/repos/LikithaVemulapalli/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"} | Where-Object { $_.tag_name -eq $Version }).id
 
 if (-not $ReleaseId) {
-    Write-Output "❌ Failed to find release ID for version $Version ❌"
+    Write-Output "❌ Failed to find release ID for version $Version  ❌"
     exit 1
 }
 
