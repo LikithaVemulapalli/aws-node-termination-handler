@@ -57,7 +57,7 @@ $global:AssetIdsUploaded = @()
 trap { HandleErrorsAndCleanup -ExitCode $global:LASTEXITCODE }
 
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Version = "v1.111.0"
+$Version = & make -s -f "$ScriptPath/../Makefile" version
 $BuildDir = "$ScriptPath/../build/k8s-resources/$Version"
 $BinaryDir = "$ScriptPath/../build/bin"
 
@@ -89,7 +89,7 @@ if (-not $ReleaseId) {
     exit 1
 }
 
-# Gather assets to upload based on the -BinariesOnly flag
+# Gather assets to upload
 $Assets = @()
 if ($BinariesOnly) {
     $Assets += Get-ChildItem -Path $BinaryDir | ForEach-Object { $_.FullName }
